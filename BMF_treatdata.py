@@ -5,7 +5,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def data_into_dataframe(year, month, day, assetname):
+def data_into_dataframe(year, month, day, assetname, plot = False):
+    print('data_into_dataframe start')
     colNames = ["Session Date", "Instrument Symbol", "Trade Number", "Trade Price", "Traded Quantity", "Trade Time", "Trade Indicator", "Buy Order Date", "Sequential Buy Order Number", "Secondary Order ID - Buy Order", "Aggressor Buy Order Indicator", "Sell Order Date", "Sequential Sell Order Number", "Secondary Order ID - Sell Order", "Aggressor Sell Order Indicator", "Cross Trade Indicator", "Buy Member", "Sell Member"]
     FileFolder_root = 'C:\\Users\\alfinira\\PycharmProjects\\Math\\BMFData\\zip\\extract\\apphmb\\intraday\\'
     FileFolder_sub = str(year)+('0'+str(month))[-2:] + '\\'
@@ -20,16 +21,19 @@ def data_into_dataframe(year, month, day, assetname):
         if data[col].dtype == np.object:
             data[col] = data[col].str.strip()
 
-
+    print('debug24')
     data_asset = data[data['Instrument Symbol'] == assetname]
     data_asset = data_asset[data_asset['Trade Price'] > 1000]
-    if not data_asset.empty:
-        data_asset['Trade Time'] = pd.to_datetime(data_asset['Trade Time'], infer_datetime_format=True)
-        data_asset.sort_values(by='Trade Time')
-        ts = pd.Series(data_asset['Trade Price'].values, index=data_asset['Trade Time'])
-        ts.plot()
-        plt.show()
+    data_asset['Trade Time'] = pd.to_datetime(data_asset['Trade Time'], infer_datetime_format=True)
+    data_asset.sort_values(by='Trade Time')
 
+    if plot == True:
+        if not data_asset.empty:
+            ts = pd.Series(data_asset['Trade Price'].values, index=data_asset['Trade Time'])
+            ts.plot()
+            plt.show()
+
+    print('data_into_dataframe finished!')
     return data_asset
 
 
